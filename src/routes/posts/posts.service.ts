@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/shared/services/prisma.service';
+import envConfig from 'src/shared/config';
 
 @Injectable()
 export class PostsService {
@@ -20,8 +21,10 @@ export class PostsService {
   }
 
   findAll() {
+    console.log(envConfig.ACCESS_TOKEN_EXPIRES_IN);
     return `This action returns all posts`;
   }
+
 
   findOne(id: number) {
     return `This action returns a #${id} post`;

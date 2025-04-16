@@ -6,12 +6,10 @@ import { UpdatePostDto } from './dto/update-post.dto';
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) { }
-
   @Post()
   create(@Body() body: any) {
     return this.postsService.create(body);
   }
-
   @Get()
   findAll() {
     return this.postsService.findAll();
