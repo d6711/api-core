@@ -4,6 +4,7 @@ import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { LoginUserDto, RegisterUserDto } from './auth.dto';
 import { TokenService } from 'src/shared/services/token.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -56,5 +57,22 @@ export class AuthService {
             }
         })
         return { accessToken, refreshToken }
+    }
+    async refreshToken(refreshToken: string) {
+        try {
+            const { userId } = await this.tokenService.verifyRefreshToken(refreshToken)
+            await this.prismaService.refreshToken.findUnique({
+                where: { token: refreshToken }
+            })
+            await this.prismaService.refreshToken.delete({
+                where: { token: refreshToken }
+            })
+            return await this.generateTokens({ userId })
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new UnauthorizedException('Refresh token has been revoked')
+            }
+            throw new UnauthorizedException('Refresh token invalid')
+        }
     }
 }
