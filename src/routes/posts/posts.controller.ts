@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { Auth } from 'src/shared/decorators/auth.decorator';
+import { AuthType, ConditionGuard } from 'src/shared/constants/auth.constant';
+import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -10,6 +13,7 @@ export class PostsController {
   create(@Body() body: any) {
     return this.postsService.create(body);
   }
+  @Auth([AuthType.Bearer, AuthType.ApiKey], { condition: ConditionGuard.And })
   @Get()
   findAll() {
     return this.postsService.findAll();

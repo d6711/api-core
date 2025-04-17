@@ -21,8 +21,7 @@ export class PostsService {
   }
 
   findAll() {
-    console.log(envConfig.ACCESS_TOKEN_EXPIRES_IN);
-    return `This action returns all posts`;
+    return this.prismaService.post.findMany()
   }
 
 

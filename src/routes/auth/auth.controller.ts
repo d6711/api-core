@@ -18,8 +18,8 @@ export class AuthController {
   async login(@Body() loginUserDto: LoginUserDto) {
     return new LoginResDto(await this.authService.login(loginUserDto))
   }
-  @UseGuards(ApiKeyGuard)
   @UseGuards(AccessTokenGuard)
+  @UseGuards(ApiKeyGuard)
   @HttpCode(HttpStatus.OK)
   @Post('refresh-token')
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
