@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 import { AuthService } from './auth.service';
 import { LoginResDto, LoginUserDto, RefreshTokenDto, RefreshTokenResDto, RegisterResDto, RegisterUserDto } from './auth.dto';
 import { AccessTokenGuard } from 'src/shared/guards/access-token.guard';
+import { ApiKeyGuard } from 'src/shared/guards/api-key.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,7 @@ export class AuthController {
   async login(@Body() loginUserDto: LoginUserDto) {
     return new LoginResDto(await this.authService.login(loginUserDto))
   }
+  @UseGuards(ApiKeyGuard)
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Post('refresh-token')

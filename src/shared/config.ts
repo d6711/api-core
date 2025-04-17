@@ -24,6 +24,8 @@ class CongigSchema {
     REFRESH_TOKEN_SECRET: string
     @IsString()
     REFRESH_TOKEN_EXPIRES_IN: string
+    @IsString()
+    API_KEY_SECRET
 }
 
 const configServer = plainToInstance(CongigSchema, process.env)
