@@ -44,3 +44,11 @@ export class RefreshTokenDto {
     refreshToken: string
 }
 export class RefreshTokenResDto extends LoginResDto { }
+export class LogoutDto extends RefreshTokenDto { }
+export class LogoutResDto {
+    @IsString()
+    message: string
+    constructor(partial: Partial<LogoutResDto>) {
+        Object.assign(this, partial)
+    }
+}

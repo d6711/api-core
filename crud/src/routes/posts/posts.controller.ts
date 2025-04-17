@@ -1,17 +1,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { AuthType, ConditionGuard } from 'src/shared/constants/auth.constant';
-import { AuthenticationGuard } from 'src/shared/guards/authentication.guard';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) { }
+  @Auth([AuthType.Bearer, AuthType.ApiKey], { condition: ConditionGuard.And })
   @Post()
-  create(@Body() body: any) {
-    return this.postsService.create(body);
+  create(@Body() body: any, @ActiveUser('userId') userId: number) {
+    return this.postsService.create(body, userId);
   }
   @Auth([AuthType.Bearer, AuthType.ApiKey], { condition: ConditionGuard.And })
   @Get()
