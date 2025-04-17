@@ -5,6 +5,7 @@ import { PrismaService } from 'src/shared/services/prisma.service';
 import { LoginUserDto, RegisterUserDto } from './auth.dto';
 import { TokenService } from 'src/shared/services/token.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { isNotFoundPrismaError, isUniqueConstraintPrismaError } from 'src/shared/helpers';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
             return user
 
         } catch (error) {
-            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+            if (isUniqueConstraintPrismaError(error)) {
                 throw new ConflictException('Email already exists')
             }
             throw error
@@ -69,7 +70,7 @@ export class AuthService {
             })
             return await this.generateTokens({ userId })
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+            if (isNotFoundPrismaError(error)) {
                 throw new UnauthorizedException('Refresh token has been revoked')
             }
             throw new UnauthorizedException('Refresh token invalid')
