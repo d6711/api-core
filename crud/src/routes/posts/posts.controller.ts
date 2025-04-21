@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { AuthType, ConditionGuard } from 'src/shared/constants/auth.constant';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
+import { GetPostItemDto } from './posts.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -15,8 +15,9 @@ export class PostsController {
   }
   @Auth([AuthType.Bearer, AuthType.ApiKey], { condition: ConditionGuard.And })
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  getPosts(@ActiveUser('userId') userId: number) {
+    return this.postsService.getPosts(userId)
+      .then((posts) => posts.map((post) => new GetPostItemDto(post)))
   }
 
   @Get(':id')
@@ -24,10 +25,6 @@ export class PostsController {
     return this.postsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
-  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

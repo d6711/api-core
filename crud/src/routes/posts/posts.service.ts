@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
@@ -18,8 +17,19 @@ export class PostsService {
     });
   }
 
-  findAll() {
-    return this.prismaService.post.findMany()
+  getPosts(userId: number) {
+    return this.prismaService.post.findMany({
+      where: {
+        authorId: userId
+      },
+      include: {
+        author: {
+          omit: {
+            password: true
+          }
+        }
+      }
+    })
   }
 
 
@@ -27,9 +37,6 @@ export class PostsService {
     return `This action returns a #${id} post`;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
-  }
 
   remove(id: number) {
     return `This action removes a #${id} post`;
